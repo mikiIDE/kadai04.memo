@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>ごはんメモ</title>
+</head>
+
+<body>
+    <div class="header">食料メモ</div>
+    <div class="container">
+        <div class="space">
+            <div class="title">冷蔵庫</div>
+            <div id="memo_fridge">
+                <!-- ここにデータを追加していく -->
+            </div>
+            <div class="memo"><textarea id="new_fridge"></textarea></div>
+            <button id="add_fridge">追加</button>
+            <button id="remove_fridge">削除</button>
+            <button id="re_buy">移動</button> <!-- もう一回買い物リストに入れる -->
+        </div>
+        <div class="space">
+            <div class="title">買うものリスト</div>
+            <div id="memo_buy">
+                <!-- ここにデータを追加していく -->
+            </div>
+            <div class="memo"><textarea id="new_buy"></textarea></div>
+            <button id="add_buy">追加</button>
+            <button id="remove_buy">削除</button>
+            <button id="done">移動</button> <!-- 買ったら冷蔵庫の中身リストへ移動 -->
+        </div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+
+        //冷蔵庫、買うものリストへ「追加」
+        $("#add_fridge").on("click", function () {
+            const r = "冷蔵庫の中";
+            const n = $("#new_fridge").val();
+            localStorage.setItem(r, n);
+            const html = `<tr><td><input type="checkbox" name="choice"></td><td>` + n + `</td></tr>`;
+            $("#memo_fridge").append(html);
+            $("#new_fridge").val("");
+        })
+
+        $("#add_buy").on("click", function () {
+            const r = "買うものリスト";
+            const n = $("#new_buy").val();
+            localStorage.setItem(r, n);
+            const html = `<tr><td><input type="checkbox" name="choice"></td><td>` + n + `</td></tr>`;
+            $("#memo_buy").append(html);
+            $("#new_buy").val("");
+        })
+
+        //削除するとき
+        //ボタンにチェックがあればそれ(=this)のみ、なければ全消し
+        $("#remove_fridge").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) { //もし1つ以上選択されていた場合
+                selected.each(function () {
+                    $(this).closest('tr').remove();
+                });
+            } else {
+                $("#memo_fridge").empty();
+                localStorage.clear();
+            }
+        });
+
+        $("#remove_buy").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) { //もし1つ以上選択されていた場合
+                selected.each(function () {
+                    $(this).closest('tr').remove();
+                });
+            } else {
+                $("#memo_buy").empty();
+                localStorage.clear();
+            }
+        });
+
+        //移動ボタン
+        //もう一回買い物リストへ移動するとき
+        $("#re_buy").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) {
+                selected.each(function () {
+                    const move = $(this).closest('tr');
+                    // <tr>を#memo_buyに移動させる
+                    $("#memo_buy").append(move);
+                });
+            } else {
+                alert("移動できるものがないよ！");
+            }
+        });
+
+        //買い物した分を冷蔵庫に入れるとき
+        $("#done").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) {
+                selected.each(function () {
+                    const move = $(this).closest('tr');
+                    // <tr>を#memo_buyに移動させる
+                    $("#memo_fridge").append(move);
+                });
+            } else {
+                alert("移動できるものがないよ！");
+            }
+        });
+
+        //ページ読み込み：localStorageからデータを取得
+        $(document).ready(function () {
+            const value = localStorage.getItem("冷蔵庫の中");
+            $("#memo_fridge").append(`<tr><td><input type="checkbox" name="choice"></td><td>` + value+`</td></tr>`);
+        })
+
+        $(document).ready(function () {
+            const value = localStorage.getItem("買うものリスト");
+            $("#memo_buy").append(`<tr><td><input type="checkbox" name="choice"></td><td>` + value+`</td></tr>`);
+        })
+
+    </script>
+
+
+</body>
+
+</html>

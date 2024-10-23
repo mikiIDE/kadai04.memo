@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/english.css">
+    <title>メモメモ英単語</title>
+</head>
+
+<body>
+    <div class="header">繰り返し覚えよう！</div>
+    <div class="container">
+        <div id="english">
+            <textarea id="eng" placeholder="英語を入力"></textarea>
+        </div>
+        <div id="japanese">
+            <textarea id="jap" placeholder="日本語を入力"></textarea>
+        </div>
+        <button id="save">保存</button>
+        <button id="delete">削除</button>
+    </div>
+    <div class="folder">
+        <!-- ここに単語帳が追加されていく -->
+        <div id="en_memo"></div>
+        <div id="jap_memo"></div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+
+        $("#save").on("click", function () {
+            const key = $("#eng").val(); //中身取得
+            const value = $("#jap").val();
+            const enMemoList = JSON.parse(localStorage.getItem("en_memo_list")) || []; //← || [];必須！
+            const japMemoList = JSON.parse(localStorage.getItem("jap_memo_list")) || [];
+            localStorage.setItem("en_memo_list", JSON.stringify(enMemoList)); //keyを設定してlocalStorageへ保存
+            localStorage.setItem("jap_memo_list", JSON.stringify(japMemoList));
+            enMemoList.push(key); //末尾に追加
+            japMemoList.push(value);
+            
+            $("#en_memo").append("<div>" + key + "</div>");
+            $("#jap_memo").append("<div>" + value + "</div>");
+            $("#eng").val("");
+            $("#jap").val("");
+        })
+
+        //いったん全部消す
+        $("#delete").on("click", function () {
+            localStorage.clear();
+            $("#en_memo").empty();
+            $("#jap_memo").empty();
+        })
+
+        // ページが読み込まれたときに実行される関数
+        $(document).ready(function () {
+            const enMemoList = JSON.parse(localStorage.getItem("en_memo_list")) || []; 
+            const japMemoList = JSON.parse(localStorage.getItem("jap_memo_list")) || [];
+
+            enMemoList.forEach(function (item) {
+                $("#en_memo").append("<div>" + item + "</div>");
+            });
+            japMemoList.forEach(function (item) {
+                $("#jap_memo").append("<div>" + item + "</div>");
+            });
+        });
+
+
+    </script>
+
+</body>
+
+</html>

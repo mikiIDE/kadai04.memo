@@ -1,0 +1,61 @@
+.header{
+    font-size: 2rem;
+    text-align: center;
+    margin: 20px;
+}
+
+.container{
+    display: flex;
+    justify-content: space-around;
+    margin-top:30px;
+}
+
+.space{
+    width: 300px;
+    height: auto;
+    text-align: center;
+    padding: 15px;
+}
+
+.title{
+    color: aliceblue;
+    background-color: black;
+    padding:15px;
+}
+
+#memo_fridge,#memo_buy{
+    background-color: pink;
+}
+
+#new_buy,#new_fridge{
+    padding: 10px;
+}
+
+button{
+    margin:10px;
+}
+
+.memo{
+    margin-top:30px;
+    color: gray;
+}
+
+.hidden{
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    bottom:5%;
+    left: 5%;
+}
+
+a{
+    text-decoration: none;
+    color: antiquewhite;
+}
+
+#all_delete{
+    display: flex;
+    justify-content: center;
+    margin: 200px auto;
+}

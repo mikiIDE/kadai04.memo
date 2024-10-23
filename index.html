@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>ごはんメモ</title>
+</head>
+
+<body>
+    <div class="header">食料メモ</div>
+    <div class="container">
+        <div class="space">
+            <div class="title">冷蔵庫</div>
+            <div id="memo_fridge">
+                <!-- ここにデータを追加していく -->
+            </div>
+            <div class="memo"><textarea id="new_fridge"></textarea></div>
+            <button id="add_fridge">追加</button>
+            <button id="remove_fridge">削除</button>
+            <button id="re_buy">移動</button> <!-- もう一回買い物リストに入れる -->
+        </div>
+        <div class="space">
+            <div class="title">買うものリスト</div>
+            <div id="memo_buy">
+                <!-- ここにデータを追加していく -->
+            </div>
+            <div class="memo"><textarea id="new_buy"></textarea></div>
+            <button id="add_buy">追加</button>
+            <button id="remove_buy">削除</button>
+            <button id="done">移動</button> <!-- 買ったら冷蔵庫の中身リストへ移動 -->
+        </div>
+
+    </div>
+    <div class="hidden"><a href="proto.html">配列なしver</a><br>
+        <a href="eitango.html">英単語ver</a></div>
+
+        <button id="all_delete">お助け</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        //配列を作る（冷蔵庫用と買い出し用）
+        let f_list = []; //冷蔵庫用の配列
+        let b_list = [];//買い出し用の配列
+
+        //冷蔵庫側リスト（配列）への追加
+        $("#add_fridge").on("click", function () {
+            //配列に追加
+            const n = $("#new_fridge").val();
+            f_list.push(n); //配列の最後尾にどんどん追加する
+            localStorage.setItem('f_list', JSON.stringify(f_list));  //localStorageへ保存(set)
+            const html = `<tr><td><input type="checkbox" name="choice"></td><td>${n}</td></tr>`;
+            //↑チェックボックス付きで追加(山崎先生のメモアプリ動画参照)
+            $("#memo_fridge").append(html); //HTML側に表示追加
+            $("#new_fridge").val(""); //入力欄を空に
+        })
+
+        //買い物側リスト（配列）への追加
+        $("#add_buy").on("click", function () {
+            //配列に追加
+            const n = $("#new_buy").val();
+            b_list.push(n);
+            localStorage.setItem('b_list', JSON.stringify(b_list));
+            const html = `<tr><td><input type="checkbox" name="choice"></td><td>${n}</td></tr>`;
+            $("#memo_buy").append(html);
+            $("#new_buy").val("");
+        })
+
+        //削除するとき
+        //ボタンにチェックがあればそれ(=this)のみ、なければ全消し
+        //配列を改めて並びなおしする→ギブアップ
+        $("#remove_fridge").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) { //もし1つ以上選択されていた場合
+                    selected.each(function () {
+                    $(this).closest('tr').remove();
+                });
+            } else {
+                $("#memo_fridge").empty();
+                localStorage.removeItem("買い物リスト");
+            }
+
+        });
+
+        $("#remove_buy").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) { //もし1つ以上選択されていた場合
+                selected.each(function () {
+                    $(this).closest('tr').remove();
+                });
+            } else {
+                $("#memo_buy").empty();
+                localStorage.removeItem("買い物リスト");
+            }
+        });
+
+
+        //移動ボタン
+        //もう一回買い物リストへ移動するとき
+        $("#re_buy").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) {
+                selected.each(function () {
+                    const move = $(this).closest('tr');
+                    // <tr>を#memo_buyに移動させる
+                    $("#memo_buy").append(move);
+                });
+            } else {
+                alert("移動できるものがないよ！");
+            }
+        });
+
+        //買い物した分を冷蔵庫に入れるとき
+        $("#done").on("click", function () {
+            const selected = $('input[name="choice"]:checked')
+            if (selected.length > 0) {
+                selected.each(function () {
+                    const move = $(this).closest('tr');
+                    // <tr>を#memo_buyに移動させる
+                    $("#memo_fridge").append(move);
+                });
+            } else {
+                alert("移動できるものがないよ！");
+            }
+        });
+
+        //ページ読み込み：localStorageからデータを取得
+        $(document).ready(function () {
+            const fridgeItems = JSON.parse(localStorage.getItem('fridgeItems'));
+            fridgeItems.forEach(function (item) { //1こずつ再確認
+                const html = `<tr><td><input type="checkbox" name="choice"></td><td>${item}</td></tr>`; //配列にいれるため
+                $("#memo_fridge").append(html);
+            });
+
+            const buyItems = JSON.parse(localStorage.getItem('buyItems'));
+            buyItems.forEach(function (item) {
+                const html = `<tr><td><input type="checkbox" name="choice"></td><td>${item}</td></tr>`;
+                $("#memo_buy").append(html);
+            });
+        });
+
+
+        //お助けアイテム全削除ボタン
+        $("#all_delete").on("click", function () {
+            localStorage.clear();
+            $("#memo_fridge").empty();
+            $("#memo_buy").empty();
+        })
+
+    </script>
+
+
+</body>
+
+</html>
